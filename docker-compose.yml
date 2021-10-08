@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  backend:
+    build: backend
+    depends_on:
+      - postgres
+    env_file:
+      - backend/.env
+    ports:
+      - 9584:9584
+    restart: always
+    networks:
+      - default
+      - internal
+
+  postgres:
+    image: postgres:11
+    hostname: postgres
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=vtb
+    volumes:
+      - vtb_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - internal
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 13131:8080
+    depends_on:
+      - postgres
+    networks:
+      - default
+      - internal
+
+networks:
+  default:
+  internal:
+    internal: true
+
+volumes:
+  vtb_data:
