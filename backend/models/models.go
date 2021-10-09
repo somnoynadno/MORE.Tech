@@ -11,10 +11,11 @@ type BaseModelCompact struct {
 
 type GameWeek struct {
 	BaseModelCompact
-	InstrumentRateChanges []*InstrumentRateChange
-	News                  []*News
-	Instruments           []*Instrument
-	Advices               []*Advice
+	InstrumentRateChanges []InstrumentRateChange
+	News                  []News
+	Instruments           []Instrument
+	Advices               []Advice
+	TestQuestions         []TestQuestion
 }
 
 type Instrument struct {
@@ -31,7 +32,6 @@ type Instrument struct {
 	BaseAmount       int
 	GameWeekID       uint
 	GameWeek         *GameWeek `json:",omitempty"`
-	Users            []*User   `gorm:"many2many:user_instruments;"`
 }
 
 type InstrumentType struct {
@@ -46,7 +46,7 @@ type InstrumentRateChange struct {
 	Instrument        *Instrument `json:",omitempty"`
 	GameWeekID        uint
 	GameWeek          *GameWeek `json:",omitempty"`
-	PriceChange       int
+	PriceChangeRate   float64
 	AdditionalPayment *int
 	PaymentName       *string
 }
@@ -68,35 +68,39 @@ type Advice struct {
 
 type UserInstrument struct {
 	BaseModelCompact
-	InstrumentID uint
-	Instrument   *Instrument `json:",omitempty"`
-	UserID       uint
-	User         *User `json:",omitempty"`
+	CurrentPrice     int
+	PriceChangedRate float64
+	InstrumentID     uint
+	Instrument       *Instrument `json:",omitempty"`
+	UserID           uint
+	User             *User `json:",omitempty"`
 }
 
 type User struct {
 	BaseModelCompact
 	Name            string
 	Balance         int
-	Instruments     []*Instrument `gorm:"many2many:user_instruments;"`
+	BaseBalance     int
+	UserInstruments []UserInstrument
 	GameWeekID      uint
 	GameWeek        *GameWeek `json:",omitempty"`
 	InvestProfileID uint
 	InvestProfile   *InvestProfile `json:",omitempty"`
+	TestAnswers     []TestAnswer   `json:",omitempty"`
 }
 
 type TestQuestion struct {
 	BaseModelCompact
-	ImageURL    string
 	Name        string
 	Text        string
-	TestAnswers []*TestAnswer
+	TestAnswers []TestAnswer
 }
 
 type TestAnswer struct {
 	BaseModelCompact
 	Name           string
-	Score          int
+	Feedback       string
+	IsCorrect      bool
 	TestQuestionID uint
 	TestQuestion   *TestQuestion `json:",omitempty"`
 }
@@ -105,5 +109,4 @@ type InvestProfile struct {
 	BaseModelCompact
 	Name        string
 	Description string
-	MinScore    int
 }

@@ -6,25 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetTestQuestions(c *gin.Context) {
-	var result []models.TestQuestion
-
-	err := db.GetDB().Preload("TestAnswers").Find(&result).Error
-	if err != nil {
-		handleInternalError(c, err)
-		return
-	}
-
-	handleOK(c, result)
-}
-
 func GetUser(c *gin.Context) {
 	var result models.User
 	id := c.Param("id")
 
 	err := db.GetDB().Preload("InvestProfile").Preload("GameWeek").
-		Preload("Instruments").Preload("GameWeek.InstrumentRateChanges").
-		Preload("GameWeek.News").Preload("GameWeek.Advices").
+		Preload("UserInstruments").Preload("UserInstruments.Instrument").
+		Preload("UserInstruments.Instrument.InstrumentType").
+		Preload("GameWeek.InstrumentRateChanges").Preload("GameWeek.News").
+		Preload("GameWeek.Advices").Preload("GameWeek.TestQuestions").
 		Preload("GameWeek.Instruments").Preload("GameWeek.Instruments.InstrumentType").
 		First(&result, id).Error
 	if err != nil {
@@ -42,9 +32,8 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	payload.InvestProfileID = 1
 	payload.GameWeekID = 1
-	payload.Balance = 100000
+	payload.Balance = payload.BaseBalance
 
 	err := db.GetDB().Create(&payload).Error
 	if err != nil {
@@ -60,7 +49,7 @@ func GetGameWeek(c *gin.Context) {
 	id := c.Param("id")
 
 	err := db.GetDB().Preload("InstrumentRateChanges").
-		Preload("News").Preload("Advices").
+		Preload("News").Preload("Advices").Preload("TestQuestions").
 		Preload("Instruments").Preload("Instruments.InstrumentType").
 		First(&result, id).Error
 	if err != nil {
