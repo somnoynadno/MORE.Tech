@@ -97,7 +97,7 @@ func NextWeek(c *gin.Context) {
 	for _, userInstrument := range userInstruments {
 		for _, rateChange := range instrumentRateChanges {
 			if rateChange.InstrumentID == userInstrument.InstrumentID {
-				delta := int(rateChange.PriceChangeRate * float64(userInstrument.CurrentPrice))
+				delta := int(rateChange.PriceChangeRate * float64(userInstrument.CurrentPrice) / 100)
 				balanceDelta += delta
 
 				userInstrument.CurrentPrice += delta
