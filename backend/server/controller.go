@@ -23,7 +23,10 @@ func GetUser(c *gin.Context) {
 	id := c.Param("id")
 
 	err := db.GetDB().Preload("InvestProfile").Preload("GameWeek").
-		Preload("Instruments").First(&result, id).Error
+		Preload("Instruments").Preload("GameWeek.InstrumentRateChanges").
+		Preload("GameWeek.News").Preload("GameWeek.Advices").
+		Preload("GameWeek.Instruments").Preload("GameWeek.Instruments.InstrumentType").
+		First(&result, id).Error
 	if err != nil {
 		handleInternalError(c, err)
 		return
