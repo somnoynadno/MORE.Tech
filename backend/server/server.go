@@ -28,11 +28,11 @@ func initRouter() *gin.Engine {
 		api.GET("/game_week/:id", GetGameWeek)
 
 		api.POST("/user/:id/next_week", NextWeek)
-		api.POST("/user/:id/buy", nil)
-		api.POST("/user/:id/sell", nil)
-		api.POST("/user/:id/add_answer", nil)
+		api.POST("/user/:id/buy", BuyInstrument)
+		api.POST("/user/:id/sell", SellInstrument)
+		api.POST("/user/:id/add_answer", AddTestAnswer)
 
-		api.GET("/user/:id/game_result", nil)
+		api.GET("/user/:id/game_result", GetGameResult)
 	}
 
 	return router

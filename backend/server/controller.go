@@ -83,3 +83,19 @@ func NextWeek(c *gin.Context) {
 
 	handleOK(c, result)
 }
+
+func BuyInstrument(c *gin.Context) {
+
+}
+
+func SellInstrument(c *gin.Context) {
+
+}
+
+func AddTestAnswer(c *gin.Context) {
+
+}
+
+func GetGameResult(c *gin.Context) {
+
+}
