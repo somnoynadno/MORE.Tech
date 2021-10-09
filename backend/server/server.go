@@ -22,8 +22,8 @@ func initRouter() *gin.Engine {
 
 	api := router.Group("/api")
 	{
+		api.POST("/user", CreateUser)
 		api.GET("/user/:id", GetUser)
-		api.POST("/user/:id", CreateUser)
 
 		api.GET("/game_week/:id", GetGameWeek)
 		api.GET("/test_question", GetTestQuestions)
