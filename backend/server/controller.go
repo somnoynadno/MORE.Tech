@@ -42,6 +42,7 @@ func CreateUser(c *gin.Context) {
 	}
 
 	user.GameWeekID = 1
+	user.Sells = 0
 	user.Balance = user.BaseBalance
 
 	err := db.GetDB().Create(&user).Error
@@ -101,7 +102,7 @@ func NextWeek(c *gin.Context) {
 				balanceDelta += delta
 
 				userInstrument.CurrentPrice += delta
-				userInstrument.PriceChangedRate = float64(userInstrument.CurrentPrice) / float64(userInstrument.Instrument.BasePrice)
+				userInstrument.PriceChangedRate = float64(userInstrument.CurrentPrice) / float64(userInstrument.Instrument.BasePrice) - 1
 				userInstrument.PriceChanged = userInstrument.CurrentPrice - userInstrument.Instrument.BasePrice
 
 				db.GetDB().Model(&userInstrument).Updates(userInstrument)
@@ -157,11 +158,11 @@ func BuyInstrument(c *gin.Context) {
 	db.GetDB().Model(&user).Updates(user)
 
 	userInstrument := models.UserInstrument{
-		UserID: uint(id),
-		InstrumentID: uint(instrumentID),
-		CurrentPrice: instrument.BasePrice,
+		UserID:           uint(id),
+		InstrumentID:     uint(instrumentID),
+		CurrentPrice:     instrument.BasePrice,
 		PriceChangedRate: 0.0,
-		PriceChanged: 0,
+		PriceChanged:     0,
 	}
 
 	err = db.GetDB().Create(&userInstrument).Error
@@ -197,6 +198,7 @@ func SellInstrument(c *gin.Context) {
 	}
 
 	user.Balance += userInstrument.CurrentPrice
+	user.Sells += 1
 	db.GetDB().Model(&user).Updates(user)
 	db.GetDB().Delete(&userInstrument)
 
@@ -214,7 +216,7 @@ func AddTestAnswer(c *gin.Context) {
 
 	userTestAnswer := models.UserTestAnswer{
 		TestAnswerID: uint(testAnswerID),
-		UserID: uint(id),
+		UserID:       uint(id),
 	}
 
 	err := db.GetDB().Create(&userTestAnswer).Error
@@ -227,5 +229,104 @@ func AddTestAnswer(c *gin.Context) {
 }
 
 func GetGameResult(c *gin.Context) {
+	var user models.User
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 
+	if err != nil {
+		handleBadRequest(c, errors.New("bad path parameters"))
+		return
+	}
+
+	err = db.GetDB().Preload("InvestProfile").Preload("GameWeek").Preload("TestAnswers").
+		Preload("UserInstruments").Preload("UserInstruments.Instrument").
+		First(&user, id).Error
+	if err != nil {
+		handleBadRequest(c, errors.New("bad path parameters"))
+		return
+	}
+
+	correctAnswers := 0
+	for _, i := range user.TestAnswers {
+		if i.IsCorrect {
+			correctAnswers += 1
+		}
+	}
+
+	income := 0
+	instrumentSum := 0
+	for _, i := range user.UserInstruments {
+		income += i.CurrentPrice
+		instrumentSum += int(i.InstrumentID)
+	}
+
+	counter := 0
+	instrumentsBalanceVerdict := "Вам не удалось сбалансировать портфель"
+	if len(user.UserInstruments) > 4 {
+		counter += 1
+		instrumentsBalanceVerdict = "В целом, вы неплохо сбалансировали свой портфель"
+
+		if len(user.UserInstruments) > 6 {
+			instrumentsBalanceVerdict = "Ваш портфель вышел отлично сбалансированным"
+		}
+	}
+	if income + user.Balance > user.BaseBalance {
+		counter += 2
+	}
+	if instrumentSum > 9 {
+		counter += 1
+	}
+
+	financialCushionVerdict := "Вы инвестировали почти все средства, не оставив финансовой подушки"
+	if float64(income / user.BaseBalance) < 0.35 {
+		financialCushionVerdict = "Вы очень аккуратно распределяли свои денежные средства"
+		counter += 2
+	} else if float64(income / user.BaseBalance) < 0.6 {
+		financialCushionVerdict = "Вы создали некоторую финансовую подушку, как мы вам и советовали"
+		counter += 1
+	}
+
+	tradingStrategyVerdict := "Вы придерживались краткосрочной стратегии продаж"
+	if user.Sells <= 3 {
+		tradingStrategyVerdict = "Вы приобретали ценные бумаги только на длительный срок"
+		counter += 2
+	} else if user.Sells <= 8 {
+		tradingStrategyVerdict = "Вы предпочитали открывать позиции на длинный и средний срок"
+		counter += 1
+	}
+
+	testAnswersVerdict := "К сожалению, вы плохо усвоили финансовую теорию"
+	if correctAnswers >= 4 {
+		testAnswersVerdict = "Вы прекрасно усвоили основы инвестирования"
+		counter += 2
+	} else if correctAnswers >= 2 {
+		testAnswersVerdict = "Вы усвоили теорию, но во многих вопросах всё ещё плохо разбираетесь"
+		counter += 1
+	}
+
+	totalVerdict := "Конечно, вы можете попробовать себя в инвестициях, но мы советуем вам лучше к этому подготовиться"
+	if counter > 6 {
+		totalVerdict = "Мы считаем, что вы превосходно справились с испытанием и можете спокойно начинать инвестировать"
+	} else if counter > 3 {
+		totalVerdict = "Мы считаем, что вы неплохо справились с испытанием и готовы начать инвестировать"
+	}
+
+	analytics := models.Analytics{
+		TotalIncome: user.Balance + income,
+		TotalIncomeRate: float64((user.Balance +income) / user.BaseBalance) - 1,
+
+		TestAnswersVerdict: testAnswersVerdict,
+		InstrumentsBalanceVerdict: instrumentsBalanceVerdict,
+		TradingStrategyVerdict: tradingStrategyVerdict,
+		FinancialCushionVerdict: financialCushionVerdict,
+		TotalVerdict: totalVerdict,
+
+		InvestProfile: *user.InvestProfile,
+		InvestProfileID: user.InvestProfileID,
+	}
+
+	db.GetDB().Create(&analytics)
+	user.AnalyticsID = analytics.ID
+	db.GetDB().Model(&user).Updates(user)
+
+	handleOK(c, analytics)
 }

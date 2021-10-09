@@ -83,6 +83,7 @@ type User struct {
 	Name            string
 	Balance         int
 	BaseBalance     int
+	Sells           int
 	GameWeekID      uint
 	GameWeek        *GameWeek `json:",omitempty"`
 	InvestProfileID uint
@@ -135,10 +136,8 @@ type Analytics struct {
 	InvestProfile   InvestProfile
 
 	InstrumentsBalanceVerdict string
-	SectorsBalanceVerdict     string
 	FinancialCushionVerdict   string
 	TestAnswersVerdict        string
-	InvestProfileVerdict      string
 	TradingStrategyVerdict    string
 	TotalVerdict              string
 }
