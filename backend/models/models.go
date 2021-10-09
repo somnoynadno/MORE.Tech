@@ -20,10 +20,12 @@ type GameWeek struct {
 type Instrument struct {
 	BaseModelCompact
 	Name             string
+	ImageURL         string
 	InstrumentTypeID uint
 	InstrumentType   InstrumentType
 	AdditionalInfo   string
 	Description      string
+	Sector           string
 	Legend           string
 	BasePrice        int
 	BaseAmount       int
@@ -39,10 +41,13 @@ type InstrumentType struct {
 
 type InstrumentRateChange struct {
 	BaseModelCompact
-	InstrumentID uint
-	Instrument   Instrument
-	GameWeekID   uint
-	GameWeek     GameWeek
+	InstrumentID      uint
+	Instrument        Instrument
+	GameWeekID        uint
+	GameWeek          GameWeek
+	PriceChange       int
+	AdditionalPayment *int
+	PaymentName       *string
 }
 
 type News struct {
@@ -70,9 +75,34 @@ type UserInstrument struct {
 
 type User struct {
 	BaseModelCompact
+	Name            string
+	Balance         int
+	Instruments     []*Instrument
+	GameWeekID      uint
+	GameWeek        GameWeek
+	InvestProfileID uint
+	InvestProfile   InvestProfile
+}
+
+type TestQuestion struct {
+	BaseModelCompact
+	ImageURL    string
 	Name        string
-	Balance     int
-	Instruments []*Instrument
-	GameWeekID  uint
-	GameWeek    GameWeek
+	Text        string
+	TestAnswers []*TestAnswer
+}
+
+type TestAnswer struct {
+	BaseModelCompact
+	Name           string
+	Score          int
+	TestQuestionID uint
+	TestQuestion   TestQuestion
+}
+
+type InvestProfile struct {
+	BaseModelCompact
+	Name        string
+	Description string
+	MinScore    int
 }

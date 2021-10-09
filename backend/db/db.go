@@ -51,6 +51,10 @@ func migrateSchema() error {
 		models.InstrumentRateChange{},
 		models.News{},
 		models.User{},
+
+		models.InvestProfile{},
+		models.TestAnswer{},
+		models.TestQuestion{},
 	).Error
 
 	return err
