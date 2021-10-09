@@ -43,6 +43,7 @@ func GetDB() *gorm.DB {
 func migrateSchema() error {
 	err := db.AutoMigrate(
 		models.UserInstrument{},
+		models.UserTestAnswer{},
 
 		models.Advice{},
 		models.GameWeek{},

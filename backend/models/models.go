@@ -88,8 +88,8 @@ type User struct {
 	InvestProfile   *InvestProfile `json:",omitempty"`
 	AnalyticsID     uint
 	Analytics       *Analytics       `json:",omitempty"`
-	TestAnswers     []TestAnswer     `json:",omitempty"`
-	UserInstruments []UserInstrument `json:",omitempty"`
+	UserInstruments []*UserInstrument `json:",omitempty"`
+	TestAnswers     []*TestAnswer    `json:",omitempty" gorm:"many2many:user_test_answers;"`
 }
 
 type TestQuestion struct {
@@ -101,6 +101,14 @@ type TestQuestion struct {
 	GameWeek    *GameWeek `json:",omitempty"`
 }
 
+type UserTestAnswer struct {
+	BaseModelCompact
+	UserID       uint
+	User         *User `json:",omitempty"`
+	TestAnswerID uint
+	TestAnswer   TestAnswer `json:",omitempty"`
+}
+
 type TestAnswer struct {
 	BaseModelCompact
 	Name           string
@@ -108,6 +116,7 @@ type TestAnswer struct {
 	IsCorrect      bool
 	TestQuestionID uint
 	TestQuestion   *TestQuestion `json:",omitempty"`
+	Users          []*User       `json:",omitempty" gorm:"many2many:user_test_answers;"`
 }
 
 type InvestProfile struct {
