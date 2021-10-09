@@ -70,6 +70,7 @@ type Advice struct {
 type UserInstrument struct {
 	BaseModelCompact
 	CurrentPrice     int
+	PriceChanged     int
 	PriceChangedRate float64
 	InstrumentID     uint
 	Instrument       *Instrument `json:",omitempty"`

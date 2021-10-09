@@ -79,8 +79,42 @@ func NextWeek(c *gin.Context) {
 		return
 	}
 
+	var instrumentRateChanges []models.InstrumentRateChange
+	err = db.GetDB().Where("game_week_id = ?", user.GameWeekID).Find(&instrumentRateChanges).Error
+	if err != nil {
+		handleInternalError(c, err)
+		return
+	}
+
+	var userInstruments []models.UserInstrument
+	err = db.GetDB().Preload("Instrument").Where("user_id = ?", user.ID).Find(&userInstruments).Error
+	if err != nil {
+		handleInternalError(c, err)
+		return
+	}
+
+	balanceDelta := 0
+	for _, userInstrument := range userInstruments {
+		for _, rateChange := range instrumentRateChanges {
+			if rateChange.InstrumentID == userInstrument.InstrumentID {
+				delta := int(rateChange.PriceChangeRate * float64(userInstrument.CurrentPrice))
+				balanceDelta += delta
+
+				userInstrument.CurrentPrice += delta
+				userInstrument.PriceChangedRate = float64(userInstrument.CurrentPrice) / float64(userInstrument.Instrument.BasePrice)
+				userInstrument.PriceChanged = userInstrument.CurrentPrice - userInstrument.Instrument.BasePrice
+
+				db.GetDB().Model(&userInstrument).Updates(userInstrument)
+
+				if rateChange.AdditionalPayment != nil {
+					delta += *rateChange.AdditionalPayment
+				}
+			}
+		}
+	}
+
 	user.GameWeekID += 1
-	// TODO: make balance changes
+	user.Balance += balanceDelta
 
 	err = db.GetDB().Model(&user).Updates(user).Error
 	if err != nil {
@@ -125,6 +159,9 @@ func BuyInstrument(c *gin.Context) {
 	userInstrument := models.UserInstrument{
 		UserID: uint(id),
 		InstrumentID: uint(instrumentID),
+		CurrentPrice: instrument.BasePrice,
+		PriceChangedRate: 0.0,
+		PriceChanged: 0,
 	}
 
 	err = db.GetDB().Create(&userInstrument).Error
