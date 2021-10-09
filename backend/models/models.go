@@ -22,7 +22,7 @@ type Instrument struct {
 	Name             string
 	ImageURL         string
 	InstrumentTypeID uint
-	InstrumentType   InstrumentType
+	InstrumentType   *InstrumentType `json:",omitempty"`
 	AdditionalInfo   string
 	Description      string
 	Sector           string
@@ -30,8 +30,8 @@ type Instrument struct {
 	BasePrice        int
 	BaseAmount       int
 	GameWeekID       uint
-	GameWeek         GameWeek
-	Users            []*User `gorm:"many2many:user_instruments;"`
+	GameWeek         *GameWeek `json:",omitempty"`
+	Users            []*User   `gorm:"many2many:user_instruments;"`
 }
 
 type InstrumentType struct {
@@ -43,9 +43,9 @@ type InstrumentType struct {
 type InstrumentRateChange struct {
 	BaseModelCompact
 	InstrumentID      uint
-	Instrument        Instrument
+	Instrument        *Instrument `json:",omitempty"`
 	GameWeekID        uint
-	GameWeek          GameWeek
+	GameWeek          *GameWeek `json:",omitempty"`
 	PriceChange       int
 	AdditionalPayment *int
 	PaymentName       *string
@@ -55,7 +55,7 @@ type News struct {
 	BaseModelCompact
 	Text       string
 	GameWeekID uint
-	GameWeek   GameWeek
+	GameWeek   *GameWeek `json:",omitempty"`
 }
 
 type Advice struct {
@@ -63,15 +63,15 @@ type Advice struct {
 	Title      string
 	Text       string
 	GameWeekID uint
-	GameWeek   GameWeek
+	GameWeek   *GameWeek `json:",omitempty"`
 }
 
 type UserInstrument struct {
 	BaseModelCompact
 	InstrumentID uint
-	Instrument   Instrument
+	Instrument   *Instrument `json:",omitempty"`
 	UserID       uint
-	User         User
+	User         *User `json:",omitempty"`
 }
 
 type User struct {
@@ -80,9 +80,9 @@ type User struct {
 	Balance         int
 	Instruments     []*Instrument `gorm:"many2many:user_instruments;"`
 	GameWeekID      uint
-	GameWeek        GameWeek
+	GameWeek        *GameWeek `json:",omitempty"`
 	InvestProfileID uint
-	InvestProfile   InvestProfile
+	InvestProfile   *InvestProfile `json:",omitempty"`
 }
 
 type TestQuestion struct {
@@ -98,7 +98,7 @@ type TestAnswer struct {
 	Name           string
 	Score          int
 	TestQuestionID uint
-	TestQuestion   TestQuestion
+	TestQuestion   *TestQuestion `json:",omitempty"`
 }
 
 type InvestProfile struct {
