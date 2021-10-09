@@ -24,7 +24,7 @@ func GetUser(c *gin.Context) {
 		Preload("GameWeek.Advices").Preload("GameWeek.TestQuestions").
 		Preload("GameWeek.TestQuestions.TestAnswers").
 		Preload("GameWeek.Instruments").Preload("GameWeek.Instruments.InstrumentType").
-		Preload("Analytics").Preload("Analytics.InvestProfile").
+		Preload("Analytics").Preload("Analytics.InvestProfile").Preload("TestAnswers").
 		First(&user, id).Error
 	if err != nil {
 		handleInternalError(c, err)
