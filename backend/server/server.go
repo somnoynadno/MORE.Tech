@@ -22,11 +22,14 @@ func initRouter() *gin.Engine {
 
 	api := router.Group("/api")
 	{
-		api.GET("/user/:id", nil)
-		api.POST("/user/:id", nil)
-		api.GET("/game_week/:id", nil)
+		api.GET("/user/:id", GetUser)
+		api.POST("/user/:id", CreateUser)
 
-		api.POST("/user/:id/next_week", nil)
+		api.GET("/game_week/:id", GetGameWeek)
+		api.GET("/test_question", GetTestQuestions)
+
+		api.POST("/user/:id/set_profile", nil)
+		api.POST("/user/:id/next_week", NextWeek)
 		api.POST("/user/:id/buy", nil)
 		api.POST("/user/:id/sell", nil)
 	}
