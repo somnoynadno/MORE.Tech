@@ -14,7 +14,7 @@ type R struct {
 }
 
 func GetUser(c *gin.Context) {
-	var result models.User
+	var user models.User
 	id := c.Param("id")
 
 	err := db.GetDB().Preload("InvestProfile").Preload("GameWeek").
@@ -25,70 +25,70 @@ func GetUser(c *gin.Context) {
 		Preload("GameWeek.TestQuestions.TestAnswers").
 		Preload("GameWeek.Instruments").Preload("GameWeek.Instruments.InstrumentType").
 		Preload("Analytics").Preload("Analytics.InvestProfile").
-		First(&result, id).Error
+		First(&user, id).Error
 	if err != nil {
 		handleInternalError(c, err)
 		return
 	}
 
-	handleOK(c, result)
+	handleOK(c, user)
 }
 
 func CreateUser(c *gin.Context) {
-	var payload models.User
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var user models.User
+	if err := c.ShouldBindJSON(&user); err != nil {
 		handleBadRequest(c, err)
 		return
 	}
 
-	payload.GameWeekID = 1
-	payload.Balance = payload.BaseBalance
+	user.GameWeekID = 1
+	user.Balance = user.BaseBalance
 
-	err := db.GetDB().Create(&payload).Error
+	err := db.GetDB().Create(&user).Error
 	if err != nil {
 		handleInternalError(c, err)
 		return
 	}
 
-	handleOK(c, payload)
+	handleOK(c, user)
 }
 
 func GetGameWeek(c *gin.Context) {
-	var result models.GameWeek
+	var gameWeek models.GameWeek
 	id := c.Param("id")
 
 	err := db.GetDB().Preload("InstrumentRateChanges").
 		Preload("News").Preload("Advices").Preload("TestQuestions").
 		Preload("Instruments").Preload("Instruments.InstrumentType").
-		First(&result, id).Error
+		First(&gameWeek, id).Error
 	if err != nil {
 		handleInternalError(c, err)
 		return
 	}
 
-	handleOK(c, result)
+	handleOK(c, gameWeek)
 }
 
 func NextWeek(c *gin.Context) {
-	var result models.User
+	var user models.User
 	id := c.Param("id")
 
-	err := db.GetDB().First(&result, id).Error
+	err := db.GetDB().First(&user, id).Error
 	if err != nil {
 		handleInternalError(c, err)
 		return
 	}
 
-	result.GameWeekID += 1
+	user.GameWeekID += 1
 	// TODO: make balance changes
 
-	err = db.GetDB().Model(&result).Updates(result).Error
+	err = db.GetDB().Model(&user).Updates(user).Error
 	if err != nil {
 		handleInternalError(c, err)
 		return
 	}
 
-	handleOK(c, result)
+	handleOK(c, user)
 }
 
 func BuyInstrument(c *gin.Context) {
