@@ -31,6 +31,7 @@ type Instrument struct {
 	BaseAmount       int
 	GameWeekID       uint
 	GameWeek         GameWeek
+	Users            []*User `gorm:"many2many:user_instruments;"`
 }
 
 type InstrumentType struct {
@@ -77,7 +78,7 @@ type User struct {
 	BaseModelCompact
 	Name            string
 	Balance         int
-	Instruments     []*Instrument
+	Instruments     []*Instrument `gorm:"many2many:user_instruments;"`
 	GameWeekID      uint
 	GameWeek        GameWeek
 	InvestProfileID uint

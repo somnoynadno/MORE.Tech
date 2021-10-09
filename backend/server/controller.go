@@ -39,6 +39,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
+	payload.InvestProfileID = 1
 	payload.GameWeekID = 1
 	payload.Balance = 100000
 
