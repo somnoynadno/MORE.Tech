@@ -81,12 +81,14 @@ type User struct {
 	Name            string
 	Balance         int
 	BaseBalance     int
-	UserInstruments []UserInstrument
 	GameWeekID      uint
 	GameWeek        *GameWeek `json:",omitempty"`
 	InvestProfileID uint
 	InvestProfile   *InvestProfile `json:",omitempty"`
-	TestAnswers     []TestAnswer   `json:",omitempty"`
+	AnalyticsID     uint
+	Analytics       *Analytics       `json:",omitempty"`
+	TestAnswers     []TestAnswer     `json:",omitempty"`
+	UserInstruments []UserInstrument `json:",omitempty"`
 }
 
 type TestQuestion struct {
@@ -128,4 +130,3 @@ type Analytics struct {
 	TradingStrategyVerdict    string
 	TotalVerdict              string
 }
-

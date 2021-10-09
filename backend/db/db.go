@@ -55,6 +55,8 @@ func migrateSchema() error {
 		models.InvestProfile{},
 		models.TestAnswer{},
 		models.TestQuestion{},
+
+		models.Analytics{},
 	).Error
 
 	return err
