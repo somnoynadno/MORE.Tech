@@ -87,9 +87,9 @@ type User struct {
 	InvestProfileID uint
 	InvestProfile   *InvestProfile `json:",omitempty"`
 	AnalyticsID     uint
-	Analytics       *Analytics       `json:",omitempty"`
+	Analytics       *Analytics        `json:",omitempty"`
 	UserInstruments []*UserInstrument `json:",omitempty"`
-	TestAnswers     []*TestAnswer    `json:",omitempty" gorm:"many2many:user_test_answers;"`
+	TestAnswers     []*TestAnswer     `json:",omitempty" gorm:"many2many:user_test_answers;"`
 }
 
 type TestQuestion struct {
@@ -126,6 +126,7 @@ type InvestProfile struct {
 }
 
 type Analytics struct {
+	BaseModelCompact
 	TotalIncome     int
 	TotalIncomeRate float64
 
