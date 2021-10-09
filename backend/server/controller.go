@@ -4,7 +4,13 @@ import (
 	"MORE.Tech/backend/db"
 	"MORE.Tech/backend/models"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
+
+type R struct {
+	Message string
+	Status  bool
+}
 
 func GetUser(c *gin.Context) {
 	var result models.User
@@ -93,7 +99,22 @@ func SellInstrument(c *gin.Context) {
 }
 
 func AddTestAnswer(c *gin.Context) {
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	testAnswerID, _ := strconv.ParseUint(c.Param("test_answer_id"), 10, 64)
 
+
+	userTestAnswer := models.UserTestAnswer{
+		TestAnswerID: uint(testAnswerID),
+		UserID: uint(id),
+	}
+
+	err := db.GetDB().Create(&userTestAnswer).Error
+	if err != nil {
+		handleInternalError(c, err)
+		return
+	}
+
+	handleOK(c, R{Message: "OK", Status: true})
 }
 
 func GetGameResult(c *gin.Context) {
