@@ -28,6 +28,7 @@ type Instrument struct {
 	Description      string
 	Sector           string
 	Legend           string
+	Rating           int
 	BasePrice        int
 	BaseAmount       int
 	GameWeekID       uint
