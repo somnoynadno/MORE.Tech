@@ -94,6 +94,8 @@ type TestQuestion struct {
 	Name        string
 	Text        string
 	TestAnswers []TestAnswer
+	GameWeekID  uint
+	GameWeek    *GameWeek `json:",omitempty"`
 }
 
 type TestAnswer struct {
@@ -110,3 +112,20 @@ type InvestProfile struct {
 	Name        string
 	Description string
 }
+
+type Analytics struct {
+	TotalIncome     int
+	TotalIncomeRate float64
+
+	InvestProfileID uint
+	InvestProfile   InvestProfile
+
+	InstrumentsBalanceVerdict string
+	SectorsBalanceVerdict     string
+	FinancialCushionVerdict   string
+	TestAnswersVerdict        string
+	InvestProfileVerdict      string
+	TradingStrategyVerdict    string
+	TotalVerdict              string
+}
+
