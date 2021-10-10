@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 )
@@ -19,6 +20,15 @@ func initRouter() *gin.Engine {
 
 	router.Use(cors.Default())
 	router.Use(loggingMiddleware())
+
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	exPath := filepath.Dir(ex)
+	log.Info(exPath)
+
+	router.LoadHTMLGlob(exPath + "/server/templates/*")
 
 	api := router.Group("/api")
 	{

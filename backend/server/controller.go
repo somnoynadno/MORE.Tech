@@ -237,7 +237,7 @@ func GetGameResult(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 
 	if err != nil {
-		handleBadRequest(c, errors.New("bad path parameters"))
+		handleBadRequest(c, err)
 		return
 	}
 
@@ -245,7 +245,7 @@ func GetGameResult(c *gin.Context) {
 		Preload("UserInstruments").Preload("UserInstruments.Instrument").
 		First(&user, id).Error
 	if err != nil {
-		handleBadRequest(c, errors.New("bad path parameters"))
+		handleBadRequest(c, err)
 		return
 	}
 

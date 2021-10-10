@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 )
@@ -13,6 +14,8 @@ import (
 func RenderResult(c *gin.Context) {
 	var user models.User
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+
+	log.Error(id, errors.New("bad parameters"))
 
 	if err != nil {
 		handleBadRequest(c, errors.New("bad path parameters"))
