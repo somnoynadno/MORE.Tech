@@ -51,6 +51,10 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
+	db.GetDB().Create(&models.UserInstrument{InstrumentID: 21, UserID: user.ID, CurrentPrice: 7740})
+	db.GetDB().Create(&models.UserInstrument{InstrumentID: 20, UserID: user.ID, CurrentPrice: 5320})
+	db.GetDB().Create(&models.UserInstrument{InstrumentID: 19, UserID: user.ID, CurrentPrice: 6480})
+
 	handleOK(c, user)
 }
 
