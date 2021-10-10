@@ -35,6 +35,8 @@ func initRouter() *gin.Engine {
 		api.GET("/user/:id/game_result", GetGameResult)
 	}
 
+	router.GET("/user/:id/dashboard", RenderResult)
+
 	return router
 }
 
