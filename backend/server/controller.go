@@ -65,6 +65,7 @@ func GetGameWeek(c *gin.Context) {
 
 	err := db.GetDB().Preload("InstrumentRateChanges").
 		Preload("News").Preload("Advices").Preload("TestQuestions").
+		Preload("TestQuestions.TestAnswers").
 		Preload("Instruments").Preload("Instruments.InstrumentType").
 		First(&gameWeek, id).Error
 	if err != nil {
