@@ -103,8 +103,8 @@ func RenderResult(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "view.html", gin.H{
-		"income": income,
-		"percent":  fmt.Sprintf("%.2f", float64(income / user.BaseBalance - 1) * 100),
+		"income": user.Balance + income - user.BaseBalance,
+		"percent":  fmt.Sprintf("%.2f", (float64(income + user.Balance) / float64(user.BaseBalance) - 1.0) * 100.0),
 		"l1": instrumentsBalanceVerdict,
 		"l2": financialCushionVerdict,
 		"l3": tradingStrategyVerdict,

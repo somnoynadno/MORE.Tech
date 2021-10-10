@@ -44,6 +44,7 @@ func CreateUser(c *gin.Context) {
 	user.GameWeekID = 1
 	user.Sells = 0
 	user.Balance = user.BaseBalance
+	user.BaseBalance += 7740 + 5320 + 6480
 
 	err := db.GetDB().Create(&user).Error
 	if err != nil {
